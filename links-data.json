@@ -1,0 +1,26 @@
+{
+  "r4CFGF": {
+    "id": "27eea6e3-4ff3-440f-a8d8-fae9d4252eb3",
+    "originalUrl": "https://labs.oracle.com/pls/apex/r/labs/labs/internships",
+    "shortCode": "r4CFGF",
+    "createdAt": "2025-09-14T14:34:10.370Z",
+    "clicks": 3,
+    "clickHistory": [
+      {
+        "timestamp": "2025-09-14T14:42:34.758Z",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+        "referer": "http://localhost:3000/r4CFGF",
+        "device": "Desktop",
+        "browser": "Chrome"
+      },
+      {
+        "timestamp": "2025-09-14T20:17:56.777Z",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+        "country": "Local",
+        "device": "Desktop",
+        "browser": "Chrome",
+        "ip": "127.0.0.1"
+      }
+    ]
+  }
+}
