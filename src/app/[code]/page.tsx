@@ -76,7 +76,14 @@ export default async function RedirectPage({ params }: RedirectPageProps) {
     // Rediriger immédiatement vers l'URL cible
     console.log(`🚀 [REDIRECT] REDIRECTION MAINTENANT vers: ${targetUrl}`);
     redirect(targetUrl);
-  } catch (error) {
+  } catch (error: unknown) {
+    // NEXT_REDIRECT est une exception normale de Next.js pour les redirections
+    if (error && typeof error === 'object' && 'digest' in error &&
+        typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
+      console.log('✅ [REDIRECT] Redirection Next.js en cours, laissons faire...');
+      throw error; // Re-lancer l'erreur pour que Next.js puisse gérer la redirection
+    }
+
     console.error('💥 [REDIRECT] Erreur critique lors de la redirection:', error);
     console.error('💥 [REDIRECT] Stack trace:', error);
     redirect('/');
