@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateShortCode, validateUrl } from '@/lib/utils';
+import { generateShortCode, validateUrl, getBaseUrl } from '@/lib/utils';
 import { DatabaseLinksService } from '@/lib/database-links-service';
 import { auth } from '@/auth';
 
@@ -91,7 +91,7 @@ export async function GET() {
       id: link.id,
       originalUrl: link.originalUrl,
       shortCode: link.shortCode,
-      shortUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/${link.shortCode}`,
+      shortUrl: `${getBaseUrl()}/${link.shortCode}`,
       createdAt: link.createdAt,
       clicks: link.clicks,
       title: link.title,

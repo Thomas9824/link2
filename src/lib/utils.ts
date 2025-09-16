@@ -35,6 +35,24 @@ export function formatUrl(url: string): string {
 }
 
 /**
+ * Obtient l'URL de base de l'application
+ */
+export function getBaseUrl(): string {
+  // En production sur Vercel
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL;
+  }
+
+  // Vercel URL automatique
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+
+  // Développement local
+  return 'http://localhost:3000';
+}
+
+/**
  * Classe utilitaire pour la combinaison de classes CSS (comme clsx)
  */
 export function cn(...classes: (string | undefined | null | false)[]): string {
