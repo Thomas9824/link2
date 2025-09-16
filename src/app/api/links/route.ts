@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateShortCode, validateUrl, getBaseUrl } from '@/lib/utils';
+import { generateShortCode, validateUrl, getBaseUrl, validateCustomAlias, sanitizeText } from '@/lib/utils';
 import { DatabaseLinksService } from '@/lib/database-links-service';
 import { auth } from '@/auth';
 
@@ -15,40 +15,59 @@ export async function POST(request: NextRequest) {
     }
     
     const { url, customAlias, title, description } = await request.json();
-    
+
     // Validation de l'URL
-    if (!url || !validateUrl(url)) {
+    if (!url || typeof url !== 'string') {
       return NextResponse.json(
-        { error: 'URL invalide' },
+        { error: 'URL requise' },
         { status: 400 }
       );
     }
 
-    // Génération d'un code court unique ou utilisation de l'alias personnalisé
+    if (!validateUrl(url)) {
+      return NextResponse.json(
+        { error: 'URL invalide ou non autorisée' },
+        { status: 400 }
+      );
+    }
+
+    // Validation et sanitisation de l'alias personnalisé
     let shortCode: string;
     if (customAlias) {
+      const aliasValidation = validateCustomAlias(customAlias);
+      if (!aliasValidation.isValid) {
+        return NextResponse.json(
+          { error: aliasValidation.error },
+          { status: 400 }
+        );
+      }
+
       // Vérifier si l'alias est disponible
-      const exists = await DatabaseLinksService.linkExists(customAlias);
+      const exists = await DatabaseLinksService.linkExists(aliasValidation.sanitized!);
       if (exists) {
         return NextResponse.json(
           { error: 'Cet alias est déjà utilisé' },
           { status: 400 }
         );
       }
-      shortCode = customAlias;
+      shortCode = aliasValidation.sanitized!;
     } else {
       do {
         shortCode = generateShortCode();
       } while (await DatabaseLinksService.linkExists(shortCode));
     }
 
+    // Sanitiser le titre et la description
+    const sanitizedTitle = title ? sanitizeText(title, 100) : null;
+    const sanitizedDescription = description ? sanitizeText(description, 300) : null;
+
     // Création du lien
     const linkData = await DatabaseLinksService.createLink(session.user.id, {
       originalUrl: url,
       shortCode,
-      customAlias,
-      title,
-      description
+      customAlias: customAlias ? shortCode : undefined,
+      title: sanitizedTitle || undefined,
+      description: sanitizedDescription || undefined
     });
 
     return NextResponse.json({
