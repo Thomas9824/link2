@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
+    "@paper-design/shaders-react": "^0.0.52",
     "@prisma/client": "^6.16.1",
     "@supercharge/request-ip": "^1.2.0",
     "@types/bcryptjs": "^2.4.6",

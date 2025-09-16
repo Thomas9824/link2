@@ -1,69 +1,86 @@
+"use client";
+
 import Link from "next/link";
+import { Dithering } from "@paper-design/shaders-react";
 
 export default function Home() {
   return (
     <div className="h-screen relative">
       {/* Carrés blancs dans les coins */}
-      <div className="absolute top-4 left-4 w-4 h-4 bg-white"></div>
-      <div className="absolute top-4 right-4 w-4 h-4 bg-white"></div>
-      <div className="absolute bottom-4 left-4 w-4 h-4 bg-white"></div>
-      <div className="absolute bottom-4 right-4 w-4 h-4 bg-white"></div>
+      <div className="absolute top-4 left-4 w-4 h-4 bg-white z-10"></div>
+      <div className="absolute top-4 right-4 w-4 h-4 bg-white z-10"></div>
+      <div className="absolute bottom-4 left-4 w-4 h-4 bg-white z-10"></div>
+      <div className="absolute bottom-4 right-4 w-4 h-4 bg-white z-10"></div>
 
-      {/* Zone haute */}
-      <div className="h-1/2 relative">
-        {/* Partie gauche noire */}
-        <div className="absolute left-0 top-0 w-1/2 h-full bg-black"></div>
-        {/* Partie droite noire aussi */}
-        <div className="absolute right-0 top-0 w-1/2 h-full bg-black"></div>
-
+      {/* Zone haute noire */}
+      <div className="h-1/2 bg-black relative">
         {/* Logo centré entre les deux zones */}
-        <div className="absolute left-8 bottom-0 transform translate-y-1/2">
-          <h1 className="text-[10rem] font-thin text-white leading-none tracking-wide">
+        <div className="absolute left-8 bottom-0 transform translate-y-1/2 z-20">
+          <h1 className="text-[12rem] font-[200] text-white leading-none tracking-wide">
             link2
           </h1>
         </div>
-      </div>
 
-      {/* Zone basse */}
-      <div className="h-1/2 relative">
-        {/* Partie gauche grise */}
-        <div className="absolute left-0 top-0 w-1/2 h-full bg-gray-300"></div>
-        {/* Partie droite noire */}
-        <div className="absolute right-0 top-0 w-1/2 h-full bg-black"></div>
-
-        {/* Contenu dans la partie droite noire */}
-        <div className="absolute top-0 right-0 w-1/2 h-full flex items-center justify-center">
-          <div className="text-center max-w-lg px-8">
-            <h2 className="text-4xl font-normal text-white mb-4 leading-tight">
-              Manage, track & analyze<br />
+        {/* Contenu à droite dans la partie noire */}
+        <div className="absolute top-0 right-0 w-1/2 h-full flex items-center justify-right">
+          <div className="text-left max-w-lg">
+            <h2 className="text-5xl font-[200] text-white mb-4 leading-tight">
+              <span className="whitespace-nowrap">Manage, track & analyze</span><br />
               traffic on your links.
             </h2>
 
-            <p className="text-lg text-gray-400 mb-8 leading-relaxed">
+            <p className="text-2xl text-gray-400 mb-4 font-[200] leading-tight">
               Import your links, shorten them, and analyze the traffic.
             </p>
 
-            {/* Ligne horizontale */}
-            <div className="w-full h-px bg-gray-500 mb-8"></div>
 
-            <div className="flex gap-4 justify-center">
+            <div className="w-full h-px justify-right bg-gray-500 mb-4"></div>
+ 
+            <div className="flex gap-4 justify-right">
               <Link
                 href="/creation-link"
-                className="text-black font-medium py-3 px-6 transition-colors"
-                style={{ backgroundColor: '#A6FF00' }}
+                className="text-white text-2xl font-[200] transition-colors inline-block relative group"
+                style={{ paddingBottom: '0.01rem' }}
               >
-                create a link
+                <span className="inline-flex items-center">
+                  create a link<svg className="inline w-5 h-5 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                    <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                  </svg>
+                </span>
+                <span className="absolute left-0 bottom-0 w-0 h-px bg-white transition-all duration-300 ease-out group-hover:w-full"></span>
               </Link>
               <Link
                 href="/connexion"
-                className="text-black font-medium py-3 px-6 transition-colors"
-                style={{ backgroundColor: '#F1ADC2' }}
+                className="text-white text-2xl font-[200] transition-colors inline-block relative group"
+                style={{ paddingBottom: '0.01rem' }}
               >
-                login
+                <span className="inline-flex items-center">
+                  login<svg className="inline w-5 h-5 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                    <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                  </svg>
+                </span>
+                <span className="absolute left-0 bottom-0 w-0 h-px bg-white transition-all duration-300 ease-out group-hover:w-full"></span>
               </Link>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Zone basse grise avec dithering ["simplex", "warp", "dots", "wave", "ripple", "swirl", "sphere"]*/}
+      <div className="h-1/2 relative">
+        <Dithering
+          style={{ height: "100%", width: "100%" }}
+          colorBack="#342C40"
+          colorFront="#B696E3"
+          shape="simplex"
+          type="4x4"
+          pxSize={8}
+          offsetX={0}
+          offsetY={0}
+          scale={0.8}
+          rotation={0}
+          speed={0.5}
+        />
       </div>
     </div>
   );
