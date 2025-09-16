@@ -280,7 +280,7 @@ export default function AnalyticsPage() {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={deviceStats}
+                    data={deviceStats.map(item => ({ name: item.name, value: item.value }))}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
@@ -338,7 +338,7 @@ export default function AnalyticsPage() {
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
-                    data={countryStats}
+                    data={countryStats.map(item => ({ name: item.name, value: item.value }))}
                     cx="50%"
                     cy="50%"
                     labelLine={false}

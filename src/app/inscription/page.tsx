@@ -120,7 +120,7 @@ export default function InscriptionPage() {
               Get Started
             </h2>
             <p className="text-left opacity-80">
-              Welcome to HextaStudio — Let's get started
+              Welcome to HextaStudio — Let&apos;s get started
             </p>
           </div>
  

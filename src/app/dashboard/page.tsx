@@ -226,7 +226,7 @@ export default function DashboardPage() {
                   <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
                       <Pie
-                        data={analytics.topCountries.slice(0, 5)}
+                        data={analytics.topCountries.slice(0, 5).map(item => ({ name: item.country, value: item.clicks }))}
                         cx="50%"
                         cy="50%"
                         labelLine={false}
