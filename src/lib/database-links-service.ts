@@ -65,13 +65,9 @@ export class DatabaseLinksService {
 
   static async getLink(shortCode: string): Promise<LinkWithClicks | null> {
     const link = await prisma.link.findUnique({
-      where: { 
+      where: {
         shortCode,
-        isActive: true,
-        OR: [
-          { expiresAt: null },
-          { expiresAt: { gt: new Date() } }
-        ]
+        isActive: true
       },
       include: {
         clicks: {
@@ -80,7 +76,18 @@ export class DatabaseLinksService {
       },
     })
 
-    if (!link) return null
+    if (!link) {
+      console.log(`❌ DatabaseLinksService: Lien ${shortCode} non trouvé ou inactif`);
+      return null;
+    }
+
+    // Vérifier manuellement l'expiration
+    if (link.expiresAt && link.expiresAt < new Date()) {
+      console.log(`❌ DatabaseLinksService: Lien ${shortCode} expiré`);
+      return null;
+    }
+
+    console.log(`✅ DatabaseLinksService: Lien ${shortCode} trouvé - ${link.originalUrl}`);
 
     return {
       ...link,

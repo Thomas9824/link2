@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       data: {
         id: linkData.id,
         originalUrl: linkData.originalUrl,
-        shortUrl: `${request.nextUrl.origin}/${shortCode}`,
+        shortUrl: `${getBaseUrl()}/${shortCode}`,
         shortCode: linkData.shortCode,
         createdAt: linkData.createdAt,
         title: linkData.title,

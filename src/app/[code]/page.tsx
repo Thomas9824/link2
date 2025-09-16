@@ -11,26 +11,34 @@ export default async function RedirectPage({ params }: RedirectPageProps) {
   const { code } = await params;
   const headersList = await headers();
 
-  console.log(`🔄 Tentative de redirection pour le code: ${code}`);
+  console.log(`🔄 [REDIRECT] Tentative de redirection pour le code: ${code}`);
 
   try {
     // Rechercher le lien dans la base de données avec le service
+    console.log(`🔍 [REDIRECT] Recherche du lien ${code} dans la base...`);
     const linkData = await DatabaseLinksService.getLink(code);
 
-    console.log(`📊 Résultat de la recherche:`, linkData ? 'Trouvé' : 'Non trouvé');
-
     if (!linkData) {
-      console.log(`❌ Code ${code} non trouvé dans la base de données`);
+      console.log(`❌ [REDIRECT] Code ${code} non trouvé, redirection vers /`);
       redirect('/');
     }
+
+    console.log(`📋 [REDIRECT] Données du lien:`, {
+      id: linkData.id,
+      originalUrl: linkData.originalUrl,
+      shortCode: linkData.shortCode,
+      isActive: linkData.isActive,
+      expiresAt: linkData.expiresAt
+    });
 
     // S'assurer que l'URL a un protocole
     let targetUrl = linkData.originalUrl;
     if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
       targetUrl = 'https://' + targetUrl;
+      console.log(`🔧 [REDIRECT] Protocole ajouté: ${targetUrl}`);
     }
 
-    console.log(`✅ Code ${code} trouvé, redirection vers: ${targetUrl}`);
+    console.log(`✅ [REDIRECT] Redirection imminente vers: ${targetUrl}`);
 
     // Capturer les données de tracking
     const userAgent = headersList.get('user-agent') || undefined;
@@ -43,15 +51,16 @@ export default async function RedirectPage({ params }: RedirectPageProps) {
       referer,
       ip
     }).then(() => {
-      console.log(`📊 Clic enregistré pour ${code}`);
+      console.log(`📊 [REDIRECT] Clic enregistré pour ${code}`);
     }).catch((error) => {
-      console.error('Erreur lors de l\'enregistrement du clic:', error);
+      console.error('❌ [REDIRECT] Erreur lors de l\'enregistrement du clic:', error);
     });
 
     // Rediriger immédiatement vers l'URL cible
+    console.log(`🚀 [REDIRECT] REDIRECTION MAINTENANT vers: ${targetUrl}`);
     redirect(targetUrl);
   } catch (error) {
-    console.error('Erreur lors de la redirection:', error);
+    console.error('💥 [REDIRECT] Erreur critique lors de la redirection:', error);
     redirect('/');
   }
 }
