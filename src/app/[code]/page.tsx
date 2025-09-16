@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { prisma } from '@/lib/prisma';
+import { DatabaseLinksService } from '@/lib/database-links-service';
 import { extractClientIPFromHeaders } from '@/lib/geolocation';
 
 interface RedirectPageProps {
@@ -14,46 +14,42 @@ export default async function RedirectPage({ params }: RedirectPageProps) {
   console.log(`🔄 Tentative de redirection pour le code: ${code}`);
 
   try {
-    // Rechercher le lien dans la base de données
-    const linkData = await prisma.link.findUnique({
-      where: { shortCode: code, isActive: true },
-      select: {
-        id: true,
-        originalUrl: true,
-        expiresAt: true
-      }
-    });
+    // Rechercher le lien dans la base de données avec le service
+    const linkData = await DatabaseLinksService.getLink(code);
+
+    console.log(`📊 Résultat de la recherche:`, linkData ? 'Trouvé' : 'Non trouvé');
 
     if (!linkData) {
-      console.log(`❌ Code ${code} non trouvé, redirection vers la page d'accueil`);
+      console.log(`❌ Code ${code} non trouvé dans la base de données`);
       redirect('/');
     }
 
-    // Vérifier si le lien a expiré
-    if (linkData.expiresAt && linkData.expiresAt < new Date()) {
-      console.log(`❌ Code ${code} a expiré, redirection vers la page d'accueil`);
-      redirect('/');
+    // S'assurer que l'URL a un protocole
+    let targetUrl = linkData.originalUrl;
+    if (!targetUrl.startsWith('http://') && !targetUrl.startsWith('https://')) {
+      targetUrl = 'https://' + targetUrl;
     }
 
-    console.log(`✅ Code ${code} trouvé, redirection vers: ${linkData.originalUrl}`);
+    console.log(`✅ Code ${code} trouvé, redirection vers: ${targetUrl}`);
 
-    // Capturer les données de tracking en parallèle
+    // Capturer les données de tracking
     const userAgent = headersList.get('user-agent') || undefined;
     const referer = headersList.get('referer') || undefined;
     const ip = extractClientIPFromHeaders(headersList);
 
-    // Incrémenter le compteur de clics avec les données de tracking (asynchrone, sans attendre)
-    prisma.click.create({
-      data: {
-        linkId: linkData.id,
-        ipAddress: ip,
-        userAgent,
-        referer
-      }
-    }).catch(console.error); // Log l'erreur mais ne bloque pas la redirection
+    // Enregistrer le clic de façon asynchrone (sans bloquer la redirection)
+    DatabaseLinksService.incrementClicks(code, {
+      userAgent,
+      referer,
+      ip
+    }).then(() => {
+      console.log(`📊 Clic enregistré pour ${code}`);
+    }).catch((error) => {
+      console.error('Erreur lors de l\'enregistrement du clic:', error);
+    });
 
-    // Rediriger vers l'URL originale
-    redirect(linkData.originalUrl);
+    // Rediriger immédiatement vers l'URL cible
+    redirect(targetUrl);
   } catch (error) {
     console.error('Erreur lors de la redirection:', error);
     redirect('/');
@@ -65,10 +61,7 @@ export async function generateMetadata({ params }: RedirectPageProps) {
   const { code } = await params;
 
   try {
-    const linkData = await prisma.link.findUnique({
-      where: { shortCode: code, isActive: true },
-      select: { originalUrl: true, title: true, description: true }
-    });
+    const linkData = await DatabaseLinksService.getLink(code);
 
     if (!linkData) {
       return {
