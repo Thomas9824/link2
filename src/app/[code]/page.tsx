@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { DatabaseLinksService } from '@/lib/database-links-service';
 import { extractClientIPFromHeaders } from '@/lib/geolocation';
+import { prisma } from '@/lib/prisma';
 
 interface RedirectPageProps {
   params: Promise<{ code: string }>;
@@ -9,26 +10,41 @@ interface RedirectPageProps {
 
 export default async function RedirectPage({ params }: RedirectPageProps) {
   const { code } = await params;
-  const headersList = await headers();
 
   console.log(`🔄 [REDIRECT] Tentative de redirection pour le code: ${code}`);
+  console.log(`🌍 [REDIRECT] Environment: ${process.env.NODE_ENV}`);
 
   try {
+    // Test de connexion directe à Prisma pour debug
+    console.log(`🔍 [REDIRECT] Test de connexion Prisma...`);
+    const prismaTest = await prisma.link.findMany({ take: 1 });
+    console.log(`✅ [REDIRECT] Prisma connecté, ${prismaTest.length} liens trouvés en test`);
+
     // Rechercher le lien dans la base de données avec le service
     console.log(`🔍 [REDIRECT] Recherche du lien ${code} dans la base...`);
     const linkData = await DatabaseLinksService.getLink(code);
 
+    console.log(`📊 [REDIRECT] Résultat de DatabaseLinksService.getLink:`, linkData);
+
     if (!linkData) {
       console.log(`❌ [REDIRECT] Code ${code} non trouvé, redirection vers /`);
+
+      // Test direct avec Prisma pour voir s'il existe
+      const directTest = await prisma.link.findUnique({
+        where: { shortCode: code }
+      });
+      console.log(`🔍 [REDIRECT] Test direct Prisma pour ${code}:`, directTest);
+
       redirect('/');
     }
 
-    console.log(`📋 [REDIRECT] Données du lien:`, {
+    console.log(`📋 [REDIRECT] Données du lien trouvé:`, {
       id: linkData.id,
       originalUrl: linkData.originalUrl,
       shortCode: linkData.shortCode,
       isActive: linkData.isActive,
-      expiresAt: linkData.expiresAt
+      expiresAt: linkData.expiresAt,
+      userId: linkData.userId
     });
 
     // S'assurer que l'URL a un protocole
@@ -41,6 +57,7 @@ export default async function RedirectPage({ params }: RedirectPageProps) {
     console.log(`✅ [REDIRECT] Redirection imminente vers: ${targetUrl}`);
 
     // Capturer les données de tracking
+    const headersList = await headers();
     const userAgent = headersList.get('user-agent') || undefined;
     const referer = headersList.get('referer') || undefined;
     const ip = extractClientIPFromHeaders(headersList);
@@ -61,6 +78,7 @@ export default async function RedirectPage({ params }: RedirectPageProps) {
     redirect(targetUrl);
   } catch (error) {
     console.error('💥 [REDIRECT] Erreur critique lors de la redirection:', error);
+    console.error('💥 [REDIRECT] Stack trace:', error);
     redirect('/');
   }
 }
