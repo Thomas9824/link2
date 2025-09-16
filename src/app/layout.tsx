@@ -21,6 +21,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
+      <head>
+        <link rel="preload" href="/OffBitTrial-101.otf" as="font" type="font/otf" crossOrigin="anonymous" />
+      </head>
       <body
         className={`${inter.variable} antialiased`}
       >

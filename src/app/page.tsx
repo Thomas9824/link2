@@ -6,20 +6,20 @@ import { Dithering } from "@paper-design/shaders-react";
 export default function Home() {
   return (
     <div className="h-screen relative">
+      {/* Logo en haut à gauche */}
+      <div className="absolute top-4 left-4 z-20">
+        <h1 className="text-white leading-none tracking-wide">
+          <span className="text-6xl" style={{ fontFamily: 'OffBit, monospace' }}>link</span><span className="font-sans font-[300] text-1xl">®</span>
+        </h1>
+      </div>
+
       {/* Carrés blancs dans les coins */}
-      <div className="absolute top-4 left-4 w-4 h-4 bg-white z-10"></div>
       <div className="absolute top-4 right-4 w-4 h-4 bg-white z-10"></div>
       <div className="absolute bottom-4 left-4 w-4 h-4 bg-white z-10"></div>
       <div className="absolute bottom-4 right-4 w-4 h-4 bg-white z-10"></div>
 
       {/* Zone haute noire */}
       <div className="h-1/2 bg-black relative">
-        {/* Logo centré entre les deux zones */}
-        <div className="absolute left-8 bottom-0 transform translate-y-1/2 z-20">
-          <h1 className="text-[12rem] font-[200] text-white leading-none tracking-wide">
-            link2
-          </h1>
-        </div>
 
         {/* Contenu à droite dans la partie noire */}
         <div className="absolute top-0 right-0 w-1/2 h-full flex items-center justify-right">

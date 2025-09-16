@@ -10,6 +10,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        offbit: ['OffBit', 'monospace'],
       },
       fontWeight: {
         '100': '100',
