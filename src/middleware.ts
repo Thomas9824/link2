@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
 
 // Store pour le rate limiting en mémoire (pour une solution simple)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
@@ -11,13 +10,12 @@ const RATE_LIMIT_CONFIG = {
   createLinkLimit: 20, // max 20 créations de liens par fenêtre
 };
 
-function getRateLimitKey(request: NextRequest, userId?: string): string {
-  // Utilise userId si connecté, sinon IP
+function getRateLimitKey(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for');
   const ip = forwarded?.split(',')[0].trim() ||
              request.headers.get('x-real-ip') ||
              'unknown';
-  return userId ? `user:${userId}` : `ip:${ip}`;
+  return `ip:${ip}`;
 }
 
 function checkRateLimit(key: string, limit: number): { allowed: boolean; remaining: number } {
@@ -56,10 +54,7 @@ export async function middleware(request: NextRequest) {
   }
 
   try {
-    // Obtenir la session pour l'utilisateur connecté
-    const session = await auth();
-    const userId = session?.user?.id;
-    const rateLimitKey = getRateLimitKey(request, userId);
+    const rateLimitKey = getRateLimitKey(request);
 
     // Rate limiting général
     const generalLimit = checkRateLimit(rateLimitKey, RATE_LIMIT_CONFIG.maxRequests);
