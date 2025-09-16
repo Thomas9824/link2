@@ -2,38 +2,50 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-black text-white flex">
-      {/* Section gauche avec le logo */}
-      <div className="flex-1 flex items-center justify-center bg-black">
-        <div className="text-left">
-          <h1 className="text-[12rem] font-thin text-white leading-none tracking-wider">
+    <div className="h-screen relative">
+      {/* Carrés blancs dans les coins */}
+      <div className="absolute top-4 left-4 w-4 h-4 bg-white"></div>
+      <div className="absolute top-4 right-4 w-4 h-4 bg-white"></div>
+      <div className="absolute bottom-4 left-4 w-4 h-4 bg-white"></div>
+      <div className="absolute bottom-4 right-4 w-4 h-4 bg-white"></div>
+
+      {/* Zone haute noire */}
+      <div className="h-1/2 bg-black relative">
+        {/* Logo centré entre les deux zones */}
+        <div className="absolute left-8 bottom-0 transform translate-y-1/2">
+          <h1 className="text-[8rem] font-thin text-white leading-none tracking-wide">
             link2
           </h1>
         </div>
       </div>
 
-      {/* Section droite avec le contenu */}
-      <div className="flex-1 flex items-center justify-center bg-gray-300 text-black">
-        <div className="max-w-md text-center px-8">
-          <h2 className="text-4xl font-light mb-4 leading-tight">
+      {/* Zone basse grise */}
+      <div className="h-1/2 bg-gray-300 flex items-center justify-center">
+        <div className="text-center max-w-lg px-8">
+          <h2 className="text-4xl font-normal text-white mb-4 leading-tight">
             Manage, track & analyze<br />
             traffic on your links.
           </h2>
 
-          <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+          <p className="text-lg text-gray-700 mb-8 leading-relaxed">
             Import your links, shorten them, and analyze the traffic.
           </p>
+
+          {/* Ligne horizontale */}
+          <div className="w-full h-px bg-gray-500 mb-8"></div>
 
           <div className="flex gap-4 justify-center">
             <Link
               href="/creation-link"
-              className="bg-green-400 hover:bg-green-500 text-black font-medium py-3 px-6 rounded transition-colors"
+              className="text-black font-medium py-3 px-6 rounded transition-colors"
+              style={{ backgroundColor: '#A6FF00' }}
             >
               create a link
             </Link>
             <Link
               href="/connexion"
-              className="bg-purple-400 hover:bg-purple-500 text-black font-medium py-3 px-6 rounded transition-colors"
+              className="text-black font-medium py-3 px-6 rounded transition-colors"
+              style={{ backgroundColor: '#F1ADC2' }}
             >
               login
             </Link>
