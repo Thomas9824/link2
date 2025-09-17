@@ -5,6 +5,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Dithering } from "@paper-design/shaders-react";
+import Link from 'next/link';
 
 const GoogleIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 48 48">
@@ -120,11 +121,11 @@ export default function InscriptionPage() {
     <div className="h-[100dvh] flex flex-col md:flex-row font-sans w-[100dvw] bg-black text-white relative">
       {/* Back arrow */}
       <div className="absolute top-4 left-4 z-20">
-        <a href="/" className="text-gray-400 hover:text-white transition-colors">
+        <Link href="/" className="text-gray-400 hover:text-white transition-colors">
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 12H5m0 0l7 7m-7-7l7-7" />
           </svg>
-        </a>
+        </Link>
       </div>
 
       {/* Left column: sign-up form */}
