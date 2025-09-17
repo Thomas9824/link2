@@ -198,6 +198,90 @@ export class DatabaseLinksService {
     return !!link
   }
 
+  static async getUserAnalytics(userId: string) {
+    // Compter les liens de l'utilisateur
+    const totalLinks = await prisma.link.count({
+      where: { userId }
+    })
+
+    // Compter les clics sur les liens de l'utilisateur
+    const totalClicks = await prisma.click.count({
+      where: {
+        link: {
+          userId
+        }
+      }
+    })
+
+    // Top pays pour les liens de l'utilisateur
+    const countryStats = await prisma.click.groupBy({
+      by: ['country'],
+      where: {
+        link: {
+          userId
+        }
+      },
+      _count: {
+        country: true,
+      },
+      orderBy: {
+        _count: {
+          country: 'desc',
+        },
+      },
+      take: 10,
+    })
+
+    // Activité des 7 derniers jours pour les liens de l'utilisateur
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+    const recentClicks = await prisma.click.findMany({
+      where: {
+        link: {
+          userId
+        },
+        clickedAt: {
+          gte: sevenDaysAgo,
+        },
+      },
+      select: {
+        clickedAt: true,
+      },
+    })
+
+    // Grouper par jour
+    const dailyClicks: { [key: string]: number } = {}
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recentClicks.forEach((click: any) => {
+      const date = click.clickedAt.toISOString().split('T')[0]
+      dailyClicks[date] = (dailyClicks[date] || 0) + 1
+    })
+
+    const recentActivity = []
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(sevenDaysAgo.getTime() + i * 24 * 60 * 60 * 1000)
+      const dateKey = date.toISOString().split('T')[0]
+      recentActivity.push({
+        date: date.toLocaleDateString('fr-FR', {
+          month: 'short',
+          day: 'numeric'
+        }),
+        clicks: dailyClicks[dateKey] || 0
+      })
+    }
+
+    return {
+      totalClicks,
+      totalLinks,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      topCountries: countryStats.map((stat: any) => ({
+        country: stat.country || 'Unknown',
+        clicks: stat._count.country,
+        links: 0, // TODO: calculer le nombre de liens uniques par pays
+      })),
+      recentActivity,
+    }
+  }
+
   static async getGlobalAnalytics() {
     const totalLinks = await prisma.link.count()
     const totalClicks = await prisma.click.count()
@@ -242,9 +326,9 @@ export class DatabaseLinksService {
       const date = new Date(sevenDaysAgo.getTime() + i * 24 * 60 * 60 * 1000)
       const dateKey = date.toISOString().split('T')[0]
       recentActivity.push({
-        date: date.toLocaleDateString('fr-FR', { 
-          month: 'short', 
-          day: 'numeric' 
+        date: date.toLocaleDateString('fr-FR', {
+          month: 'short',
+          day: 'numeric'
         }),
         clicks: dailyClicks[dateKey] || 0
       })

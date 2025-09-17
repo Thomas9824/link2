@@ -12,6 +12,12 @@ interface LinkResult {
   createdAt: string;
 }
 
+const GlassInputWrapper = ({ children }: { children: React.ReactNode }) => (
+  <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm transition-colors focus-within:border-violet-400/70 focus-within:bg-violet-500/10">
+    {children}
+  </div>
+);
+
 export default function CreateLinkPage() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,16 +29,16 @@ export default function CreateLinkPage() {
     e.preventDefault();
     setError('');
     setResult(null);
-    
+
     if (!url.trim()) {
-      setError('Veuillez entrer une URL');
+      setError('Please enter a URL');
       return;
     }
 
     const formattedUrl = formatUrl(url.trim());
-    
+
     if (!validateUrl(formattedUrl)) {
-      setError('URL invalide. Assurez-vous qu\'elle commence par http:// ou https://');
+      setError('Invalid URL. Make sure it starts with http:// or https://');
       return;
     }
 
@@ -50,13 +56,13 @@ export default function CreateLinkPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Erreur lors de la création du lien');
+        throw new Error(data.error || 'Error creating link');
       }
 
       setResult(data.data);
       setUrl('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -69,104 +75,131 @@ export default function CreateLinkPage() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
-        console.error('Erreur lors de la copie:', err);
+        console.error('Copy error:', err);
       }
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Raccourcir un lien
-          </h1>
-          <p className="text-lg text-gray-600">
-            Transformez vos liens longs en liens courts et faciles à partager
-          </p>
-        </div>
+    <div className="h-screen relative bg-black text-white font-sans">
+      {/* Back arrow */}
+      <div className="absolute top-4 left-4 z-20">
+        <Link href="/" className="text-gray-400 hover:text-white transition-colors">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 12H5m0 0l7 7m-7-7l7-7" />
+          </svg>
+        </Link>
+      </div>
 
-        <div className="bg-white rounded-lg shadow-lg p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-2">
-                URL à raccourcir
-              </label>
-              <input
-                type="url"
-                id="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://exemple.com/mon-lien-tres-long"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                disabled={loading}
-              />
-            </div>
+      {/* Contenu principal centré */}
+      <div className="h-full flex items-center justify-center p-8">
+        <div className="w-full max-w-2xl">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-6xl font-[200] text-white mb-4 leading-tight">
+              Create a <span style={{ fontFamily: 'OffBit, monospace' }}>short link</span>
+            </h1>
+            <p className="text-xl text-gray-400 font-[200] leading-tight">
+              Transform your long URLs into short, shareable links
+            </p>
+          </div>
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                {error}
+          <div className="space-y-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="text-sm font-[200] text-gray-400 block mb-3">
+                  URL to shorten
+                </label>
+                <GlassInputWrapper>
+                  <input
+                    type="url"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    placeholder="https://example.com/your-very-long-link"
+                    className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none text-white placeholder-gray-500 font-[200]"
+                    disabled={loading}
+                  />
+                </GlassInputWrapper>
               </div>
-            )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
-            >
-              {loading ? 'Création en cours...' : 'Raccourcir le lien'}
-            </button>
-          </form>
-
-          {result && (
-            <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-lg">
-              <h3 className="text-lg font-semibold text-green-800 mb-4">
-                Lien créé avec succès !
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Lien original :
-                  </label>
-                  <p className="text-sm text-gray-600 break-all">{result.originalUrl}</p>
+              {error && (
+                <div className="bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg font-[200]">
+                  {error}
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Lien raccourci :
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={result.shortUrl}
-                      readOnly
-                      className="flex-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded text-sm"
-                    />
-                    <button
-                      onClick={copyToClipboard}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded transition-colors"
-                    >
-                      {copied ? 'Copié !' : 'Copier'}
-                    </button>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-2xl bg-white text-black py-4 font-[200] hover:bg-gray-100 disabled:bg-gray-300 transition-colors"
+              >
+                {loading ? 'Creating link...' : 'Shorten link'}
+              </button>
+            </form>
+
+            {result && (
+              <div className="mt-8 p-6 bg-green-900/20 border border-green-700 rounded-2xl">
+                <h3 className="text-lg font-[200] text-green-400 mb-4">
+                  Link created successfully!
+                </h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-[200] text-gray-400 mb-2">
+                      Original link:
+                    </label>
+                    <p className="text-sm text-gray-300 break-all font-[200]">{result.originalUrl}</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-[200] text-gray-400 mb-2">
+                      Short link:
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <GlassInputWrapper>
+                        <input
+                          type="text"
+                          value={result.shortUrl}
+                          readOnly
+                          className="flex-1 bg-transparent text-sm p-3 rounded-2xl focus:outline-none text-white font-[200]"
+                        />
+                      </GlassInputWrapper>
+                      <button
+                        onClick={copyToClipboard}
+                        className="px-6 py-3 bg-white hover:bg-gray-100 text-black text-sm font-[200] rounded-2xl transition-colors whitespace-nowrap"
+                      >
+                        {copied ? 'Copied!' : 'Copy'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="text-xs text-gray-500 font-[200]">
+                    Created on {new Date(result.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                   </div>
                 </div>
-                
-                <div className="text-xs text-gray-500">
-                  Créé le {new Date(result.createdAt).toLocaleString('fr-FR')}
-                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        <div className="mt-8 text-center">
+          <div className="mt-12 text-center">
           <Link
-            href="/dashboard"
-            className="text-blue-600 hover:text-blue-800 font-medium"
-          >
-            Voir tous mes liens →
-          </Link>
+                href="/dashboard"
+                className="text-white text-2xl font-[200] transition-colors inline-block relative group"
+                style={{ paddingBottom: '0.01rem' }}
+              >
+                <span className="inline-flex items-center">
+                  View all my links<svg className="inline w-5 h-5 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                    <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                  </svg>
+                </span>
+                <span className="absolute left-0 bottom-0 w-0 h-px bg-white transition-all duration-300 ease-out group-hover:w-full"></span>
+              </Link>
+          </div>
         </div>
       </div>
     </div>

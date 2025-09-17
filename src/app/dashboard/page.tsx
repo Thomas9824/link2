@@ -171,10 +171,10 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Analytics globales */}
+        {/* Analytics utilisateur */}
         {analytics && (
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Analytics globales</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Mes analytics</h2>
             
             {/* Statistiques principales */}
             <div className="grid md:grid-cols-4 gap-6 mb-6">
