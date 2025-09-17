@@ -74,12 +74,12 @@ export default function Home() {
           colorFront="#B696E3"
           shape="simplex"
           type="4x4"
-          pxSize={8}
+          pxSize={4}
           offsetX={0}
           offsetY={0}
           scale={0.8}
           rotation={0}
-          speed={0.5}
+          speed={0.3}
         />
       </div>
     </div>
