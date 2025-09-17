@@ -117,15 +117,24 @@ export default function InscriptionPage() {
   }
 
   return (
-    <div className="h-[100dvh] flex flex-col md:flex-row font-geist w-[100dvw] bg-black text-white">
+    <div className="h-[100dvh] flex flex-col md:flex-row font-sans w-[100dvw] bg-black text-white relative">
+      {/* Back arrow */}
+      <div className="absolute top-4 left-4 z-20">
+        <a href="/" className="text-gray-400 hover:text-white transition-colors">
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 12H5m0 0l7 7m-7-7l7-7" />
+          </svg>
+        </a>
+      </div>
+
       {/* Left column: sign-up form */}
       <section className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="flex flex-col gap-6">
-            <h1 className="animate-element animate-delay-100 text-4xl md:text-5xl font-semibold leading-tight">
-              <span className="font-light text-white tracking-tighter">Get Started</span>
+            <h1 className="animate-element animate-delay-100 text-4xl md:text-5xl font-[200] leading-tight">
+              <span className="font-[200] text-white tracking-tighter">Get Started</span>
             </h1>
-            <p className="animate-element animate-delay-200 text-gray-400">
+            <p className="animate-element animate-delay-200 text-gray-400 font-[200]">
               Create your account and start your journey with us
             </p>
 
@@ -137,7 +146,7 @@ export default function InscriptionPage() {
 
             <form className="space-y-5" onSubmit={handleSubmit}>
               <div className="animate-element animate-delay-300">
-                <label className="text-sm font-medium text-gray-400">Full Name</label>
+                <label className="text-sm font-[200] text-gray-400">Full Name</label>
                 <GlassInputWrapper>
                   <input
                     name="name"
@@ -155,7 +164,7 @@ export default function InscriptionPage() {
               </div>
 
               <div className="animate-element animate-delay-400">
-                <label className="text-sm font-medium text-gray-400">Email Address</label>
+                <label className="text-sm font-[200] text-gray-400">Email Address</label>
                 <GlassInputWrapper>
                   <input
                     name="email"
@@ -173,7 +182,7 @@ export default function InscriptionPage() {
               </div>
 
               <div className="animate-element animate-delay-500">
-                <label className="text-sm font-medium text-gray-400">Create Password</label>
+                <label className="text-sm font-[200] text-gray-400">Create Password</label>
                 <GlassInputWrapper>
                   <div className="relative">
                     <input
@@ -195,23 +204,23 @@ export default function InscriptionPage() {
                 )}
               </div>
 
-              <button type="submit" disabled={loading} className="animate-element animate-delay-600 w-full rounded-2xl bg-white text-black py-4 font-medium hover:bg-gray-100 transition-colors">
+              <button type="submit" disabled={loading} className="animate-element animate-delay-600 w-full rounded-2xl bg-white text-black py-4 font-[200] hover:bg-gray-100 transition-colors">
                 {loading ? 'Creating Account...' : 'Create Account'}
               </button>
             </form>
 
             <div className="animate-element animate-delay-700 relative flex items-center justify-center">
               <span className="w-full border-t border-gray-700"></span>
-              <span className="px-4 text-sm text-gray-400 bg-black absolute">Or continue with</span>
+              <span className="px-4 text-sm text-gray-400 bg-black absolute font-[200]">Or continue with</span>
             </div>
 
-            <button onClick={handleGoogleSignIn} className="animate-element animate-delay-800 w-full flex items-center justify-center gap-3 border border-gray-700 rounded-2xl py-4 hover:bg-gray-900 transition-colors">
+            <button onClick={handleGoogleSignIn} className="animate-element animate-delay-800 w-full flex items-center justify-center gap-3 border border-gray-700 rounded-2xl py-4 hover:bg-gray-900 transition-colors font-[200]">
                 <GoogleIcon />
                 Continue with Google
             </button>
 
-            <p className="animate-element animate-delay-900 text-center text-sm text-gray-400">
-              Already have an account? <a href="#" onClick={(e) => { e.preventDefault(); handleSignIn(); }} className="text-violet-400 hover:underline transition-colors">Sign In</a>
+            <p className="animate-element animate-delay-900 text-center text-sm text-gray-400 font-[200]">
+              Already have an account? <a href="#" onClick={(e) => { e.preventDefault(); handleSignIn(); }} className="text-violet-400 hover:underline transition-colors font-[200]">Sign In</a>
             </p>
           </div>
         </div>
