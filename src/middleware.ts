@@ -3,9 +3,10 @@ import { NextRequest, NextResponse } from 'next/server';
 // Store pour le rate limiting en mémoire (pour une solution simple)
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
+
 // Configuration du rate limiting
 const RATE_LIMIT_CONFIG = {
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 15 * 60 * 1000, // 15 minutess
   maxRequests: 100, // max 100 requêtes par fenêtre
   createLinkLimit: 20, // max 20 créations de liens par fenêtre
 };
