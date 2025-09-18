@@ -161,10 +161,10 @@ export default function AnalyticsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement des analytics...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-400 mx-auto mb-4"></div>
+          <p className="text-gray-400 font-[200]">Loading analytics...</p>
         </div>
       </div>
     );
@@ -172,15 +172,15 @@ export default function AnalyticsPage() {
 
   if (error || !linkData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Erreur</h2>
-          <p className="text-gray-600 mb-6">{error}</p>
+          <h2 className="text-2xl font-[200] text-white mb-4">Error</h2>
+          <p className="text-gray-400 mb-6 font-[200]">{error}</p>
           <Link
             href="/dashboard"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+            className="rounded-2xl bg-white text-black py-4 px-8 font-[200] hover:bg-gray-100 transition-colors"
           >
-            Retour au dashboard
+            Back to dashboard
           </Link>
         </div>
       </div>
@@ -194,26 +194,26 @@ export default function AnalyticsPage() {
   const countryStats = getCountryStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
+    <div className="min-h-screen bg-black text-white py-12 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <Link
               href="/dashboard"
-              className="text-blue-600 hover:text-blue-800 font-medium mb-2 inline-block"
+              className="text-violet-400 hover:text-violet-300 font-[200] mb-2 inline-block"
             >
-              ← Retour au dashboard
+              ← Back to dashboard
             </Link>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Analytics avancées
+            <h1 className="text-4xl md:text-5xl font-[200] text-white mb-4 leading-tight">
+              Advanced <span style={{ fontFamily: 'OffBit, monospace' }}>Analytics</span>
             </h1>
-            <div className="bg-white rounded-lg p-4 shadow-sm">
-              <p className="text-lg text-gray-600 mb-1">
-                <strong>Lien court :</strong> {linkData.shortUrl}
+            <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
+              <p className="text-lg text-gray-300 mb-1 font-[200]">
+                <strong>Short link:</strong> {linkData.shortUrl}
               </p>
-              <p className="text-sm text-gray-500 break-all">
-                <strong>URL originale :</strong> {linkData.originalUrl}
+              <p className="text-sm text-gray-400 break-all font-[200]">
+                <strong>Original URL:</strong> {linkData.originalUrl}
               </p>
             </div>
           </div>
@@ -221,33 +221,33 @@ export default function AnalyticsPage() {
 
         {/* Stats principales */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Total des clics</h3>
-            <p className="text-3xl font-bold text-blue-600">{linkData.clicks}</p>
+          <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
+            <h3 className="text-lg font-[200] text-gray-400 mb-2">Total Clicks</h3>
+            <p className="text-3xl font-[200] text-violet-400">{linkData.clicks}</p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Créé le</h3>
-            <p className="text-sm text-gray-600">
-              {new Date(linkData.createdAt).toLocaleDateString('fr-FR', {
+          <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
+            <h3 className="text-lg font-[200] text-gray-400 mb-2">Created</h3>
+            <p className="text-sm text-white font-[200]">
+              {new Date(linkData.createdAt).toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
               })}
             </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Dernier clic</h3>
-            <p className="text-sm text-gray-600">
-              {linkData.clickHistory && Array.isArray(linkData.clickHistory) && linkData.clickHistory.length > 0 
-                ? new Date(linkData.clickHistory[linkData.clickHistory.length - 1].timestamp).toLocaleDateString('fr-FR')
-                : 'Aucun clic'
+          <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
+            <h3 className="text-lg font-[200] text-gray-400 mb-2">Last Click</h3>
+            <p className="text-sm text-white font-[200]">
+              {linkData.clickHistory && Array.isArray(linkData.clickHistory) && linkData.clickHistory.length > 0
+                ? new Date(linkData.clickHistory[linkData.clickHistory.length - 1].timestamp).toLocaleDateString('en-US')
+                : 'No clicks'
               }
             </p>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Appareil principal</h3>
-            <p className="text-sm text-gray-600">
-              {deviceStats.length > 0 
+          <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
+            <h3 className="text-lg font-[200] text-gray-400 mb-2">Main Device</h3>
+            <p className="text-sm text-white font-[200]">
+              {deviceStats.length > 0
                 ? deviceStats.sort((a, b) => b.value - a.value)[0].name
                 : 'N/A'
               }
@@ -259,15 +259,15 @@ export default function AnalyticsPage() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Clics dans le temps */}
           {clicksOverTime.length > 0 && (
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Clics dans le temps</h3>
+            <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
+              <h3 className="text-xl font-[200] text-white mb-4">Clicks Over Time</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={clicksOverTime}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Line type="monotone" dataKey="clics" stroke="#2563eb" strokeWidth={2} />
+                  <Line type="monotone" dataKey="clics" stroke="#B696E3" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -275,8 +275,8 @@ export default function AnalyticsPage() {
 
           {/* Appareils */}
           {deviceStats.length > 0 && (
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Répartition par appareil</h3>
+            <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
+              <h3 className="text-xl font-[200] text-white mb-4">Device Breakdown</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -301,15 +301,15 @@ export default function AnalyticsPage() {
 
           {/* Navigateurs */}
           {browserStats.length > 0 && (
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Navigateurs</h3>
+            <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
+              <h3 className="text-xl font-[200] text-white mb-4">Browsers</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={browserStats}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="value" fill="#10b981" />
+                  <Bar dataKey="value" fill="#B696E3" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -317,15 +317,15 @@ export default function AnalyticsPage() {
 
           {/* Sources de trafic */}
           {refererStats.length > 0 && (
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Sources de trafic</h3>
+            <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
+              <h3 className="text-xl font-[200] text-white mb-4">Traffic Sources</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={refererStats}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="value" fill="#f59e0b" />
+                  <Bar dataKey="value" fill="#B696E3" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -333,8 +333,8 @@ export default function AnalyticsPage() {
 
           {/* Répartition par pays */}
           {countryStats.length > 0 && (
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Répartition par pays</h3>
+            <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
+              <h3 className="text-xl font-[200] text-white mb-4">Country Breakdown</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -360,47 +360,47 @@ export default function AnalyticsPage() {
 
         {/* Historique détaillé */}
         {linkData.clickHistory && Array.isArray(linkData.clickHistory) && linkData.clickHistory.length > 0 && (
-          <div className="bg-white rounded-lg shadow-lg mt-8">
-            <div className="px-6 py-4 border-b">
-              <h3 className="text-xl font-semibold text-gray-900">Historique des clics</h3>
+          <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm mt-8">
+            <div className="px-6 py-4 border-b border-gray-700">
+              <h3 className="text-xl font-[200] text-white">Click History</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date et heure
+                    <th className="px-6 py-3 text-left text-xs font-[200] text-gray-400 uppercase tracking-wider">
+                      Date & Time
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Appareil
+                    <th className="px-6 py-3 text-left text-xs font-[200] text-gray-400 uppercase tracking-wider">
+                      Device
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Navigateur
+                    <th className="px-6 py-3 text-left text-xs font-[200] text-gray-400 uppercase tracking-wider">
+                      Browser
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-[200] text-gray-400 uppercase tracking-wider">
                       Source
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Pays
+                    <th className="px-6 py-3 text-left text-xs font-[200] text-gray-400 uppercase tracking-wider">
+                      Country
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-700">
                   {(linkData.clickHistory || []).slice().reverse().slice(0, 50).map((click, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(click.timestamp).toLocaleString('fr-FR')}
+                    <tr key={index} className="hover:bg-white/5">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white font-[200]">
+                        {new Date(click.timestamp).toLocaleString('en-US')}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-[200]">
                         {click.device || 'Unknown'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-[200]">
                         {click.browser || 'Unknown'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-[200]">
                         {click.referer ? new URL(click.referer).hostname : 'Direct'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 font-[200]">
                         {click.country || 'Unknown'}
                       </td>
                     </tr>
@@ -408,8 +408,8 @@ export default function AnalyticsPage() {
                 </tbody>
               </table>
               {linkData.clickHistory && linkData.clickHistory.length > 50 && (
-                <div className="px-6 py-4 text-center text-sm text-gray-500">
-                  Affichage des 50 derniers clics sur {linkData.clickHistory.length} au total
+                <div className="px-6 py-4 text-center text-sm text-gray-400 font-[200]">
+                  Showing last 50 clicks out of {linkData.clickHistory.length} total
                 </div>
               )}
             </div>
