@@ -254,10 +254,10 @@ export default function AnalyticsPage() {
                 <LineChart
                   dataset={clicksOverTime}
                   xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
-                  series={[{ dataKey: 'clics', color: '#B696E3', label: 'Clicks', curve: 'linear' }]}
+                  series={[{ dataKey: 'clics', color: '#B696E3', label: 'Clicks', curve: 'catmullRom' }]}
                   width={undefined}
                   height={300}
-                  margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
+                  margin={{ left: 10, right: 10, top: 10, bottom: 40 }}
                   sx={{
                     '& .MuiChartsAxis-line': { stroke: '#374151' },
                     '& .MuiChartsAxis-tick': { stroke: '#374151' },
@@ -270,7 +270,57 @@ export default function AnalyticsPage() {
             </div>
           )}
 
-          {/* Deuxième ligne - Graphiques en grille */}
+          {/* Graphiques secondaires - LineCharts pleine largeur */}
+
+          {/* Navigateurs */}
+          {browserStats.length > 0 && (
+            <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6 mb-6">
+              <h3 className="text-xl font-[200] text-white mb-4">Browsers</h3>
+              <div className="h-80">
+                <LineChart
+                  dataset={browserStats}
+                  xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
+                  series={[{ dataKey: 'value', color: '#B696E3', label: 'Usage', curve: 'catmullRom' }]}
+                  width={undefined}
+                  height={300}
+                  margin={{ left: 10, right: 10, top: 10, bottom: 40 }}
+                  sx={{
+                    '& .MuiChartsAxis-line': { stroke: '#374151' },
+                    '& .MuiChartsAxis-tick': { stroke: '#374151' },
+                    '& .MuiChartsAxis-tickLabel': { fill: '#9CA3AF', fontSize: '12px' },
+                    '& .MuiChartsGrid-line': { stroke: '#374151', strokeDasharray: '3 3' },
+                    '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Sources de trafic */}
+          {refererStats.length > 0 && (
+            <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6 mb-6">
+              <h3 className="text-xl font-[200] text-white mb-4">Traffic Sources</h3>
+              <div className="h-80">
+                <LineChart
+                  dataset={refererStats}
+                  xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
+                  series={[{ dataKey: 'value', color: '#B696E3', label: 'Clicks', curve: 'catmullRom' }]}
+                  width={undefined}
+                  height={300}
+                  margin={{ left: 10, right: 10, top: 10, bottom: 40 }}
+                  sx={{
+                    '& .MuiChartsAxis-line': { stroke: '#374151' },
+                    '& .MuiChartsAxis-tick': { stroke: '#374151' },
+                    '& .MuiChartsAxis-tickLabel': { fill: '#9CA3AF', fontSize: '12px' },
+                    '& .MuiChartsGrid-line': { stroke: '#374151', strokeDasharray: '3 3' },
+                    '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Graphiques en grille pour les PieCharts */}
           <div className="grid lg:grid-cols-2 gap-6">
 
           {/* Appareils */}
@@ -302,53 +352,6 @@ export default function AnalyticsPage() {
             </div>
           )}
 
-          {/* Navigateurs */}
-          {browserStats.length > 0 && (
-            <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
-              <h3 className="text-xl font-[200] text-white mb-4">Browsers</h3>
-              <div className="h-80">
-                <LineChart
-                  dataset={browserStats}
-                  xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
-                  series={[{ dataKey: 'value', color: '#B696E3', label: 'Usage', curve: 'catmullRom' }]}
-                  width={undefined}
-                  height={300}
-                  margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
-                  sx={{
-                    '& .MuiChartsAxis-line': { stroke: '#374151' },
-                    '& .MuiChartsAxis-tick': { stroke: '#374151' },
-                    '& .MuiChartsAxis-tickLabel': { fill: '#9CA3AF', fontSize: '12px' },
-                    '& .MuiChartsGrid-line': { stroke: '#374151', strokeDasharray: '3 3' },
-                    '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Sources de trafic */}
-          {refererStats.length > 0 && (
-            <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
-              <h3 className="text-xl font-[200] text-white mb-4">Traffic Sources</h3>
-              <div className="h-80">
-                <LineChart
-                  dataset={refererStats}
-                  xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
-                  series={[{ dataKey: 'value', color: '#B696E3', label: 'Clicks', curve: 'catmullRom' }]}
-                  width={undefined}
-                  height={300}
-                  margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
-                  sx={{
-                    '& .MuiChartsAxis-line': { stroke: '#374151' },
-                    '& .MuiChartsAxis-tick': { stroke: '#374151' },
-                    '& .MuiChartsAxis-tickLabel': { fill: '#9CA3AF', fontSize: '12px' },
-                    '& .MuiChartsGrid-line': { stroke: '#374151', strokeDasharray: '3 3' },
-                    '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
-                  }}
-                />
-              </div>
-            </div>
-          )}
 
           {/* Répartition par pays */}
           {countryStats.length > 0 && (
@@ -438,6 +441,7 @@ export default function AnalyticsPage() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

@@ -209,7 +209,7 @@ export default function DashboardPage() {
                       series={[{ dataKey: 'clicks', color: '#B696E3', label: 'Clicks', curve: 'catmullRom' }]}
                       width={undefined}
                       height={250}
-                      margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
+                      margin={{ left: 10, right: 10, top: 10, bottom: 40 }}
                       sx={{
                         '& .MuiChartsAxis-line': { stroke: '#374151' },
                         '& .MuiChartsAxis-tick': { stroke: '#374151' },
