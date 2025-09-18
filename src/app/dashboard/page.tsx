@@ -4,18 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
-} from 'recharts';
+import { LineChart } from '@mui/x-charts/LineChart';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 interface LinkData {
   id: string;
@@ -42,7 +32,7 @@ interface GlobalAnalytics {
   }[];
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+const CHART_COLORS = ['#B696E3', '#9333EA', '#7C3AED', '#6D28D9', '#5B21B6'];
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -212,15 +202,23 @@ export default function DashboardPage() {
               {analytics.recentActivity.length > 0 && (
                 <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
                   <h3 className="text-xl font-[200] text-white mb-4">Last 7 days activity</h3>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={analytics.recentActivity}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="clicks" fill="#B696E3" />
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <div className="h-64">
+                    <LineChart
+                      dataset={analytics.recentActivity}
+                      xAxis={[{ scaleType: 'band', dataKey: 'date' }]}
+                      series={[{ dataKey: 'clicks', color: '#B696E3', label: 'Clicks', curve: 'catmullRom' }]}
+                      width={undefined}
+                      height={250}
+                      margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
+                      sx={{
+                        '& .MuiChartsAxis-line': { stroke: '#374151' },
+                        '& .MuiChartsAxis-tick': { stroke: '#374151' },
+                        '& .MuiChartsAxis-tickLabel': { fill: '#9CA3AF', fontSize: '12px' },
+                        '& .MuiChartsGrid-line': { stroke: '#374151', strokeDasharray: '3 3' },
+                        '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
+                      }}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -228,25 +226,28 @@ export default function DashboardPage() {
               {analytics.topCountries.length > 0 && (
                 <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
                   <h3 className="text-xl font-[200] text-white mb-4">Top countries by clicks</h3>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <PieChart>
-                      <Pie
-                        data={analytics.topCountries.slice(0, 5).map(item => ({ name: item.country, value: item.clicks }))}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="clicks"
-                      >
-                        {analytics.topCountries.slice(0, 5).map((_entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <div className="h-64">
+                    <PieChart
+                      series={[
+                        {
+                          data: analytics.topCountries.slice(0, 5).map((item, index) => ({
+                            id: index,
+                            value: item.clicks,
+                            label: item.country,
+                            color: CHART_COLORS[index % CHART_COLORS.length]
+                          })),
+                          highlightScope: { fade: 'global', highlight: 'item' },
+                        },
+                      ]}
+                      width={undefined}
+                      height={250}
+                      margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                      sx={{
+                        '& .MuiChartsLegend-series text': { fill: '#F9FAFB !important', fontSize: '12px' },
+                        '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
+                      }}
+                    />
+                  </div>
                 </div>
               )}
             </div>
@@ -281,7 +282,7 @@ export default function DashboardPage() {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className={`w-3 h-3 rounded-full mr-2`} 
-                                   style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                                   style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }}></div>
                               <span className="text-sm font-[200] text-white">
                                 {country.country}
                               </span>

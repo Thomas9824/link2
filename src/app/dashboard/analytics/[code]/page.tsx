@@ -3,20 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  Bar
-} from 'recharts';
+import { LineChart } from '@mui/x-charts/LineChart';
+import { PieChart } from '@mui/x-charts/PieChart';
 
 interface LinkData {
   id: string;
@@ -41,9 +29,10 @@ interface ClickEvent {
 interface ChartData {
   name: string;
   value: number;
+  [key: string]: string | number;
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+const CHART_COLORS = ['#B696E3', '#9333EA', '#7C3AED', '#6D28D9', '#5B21B6'];
 
 export default function AnalyticsPage() {
   const params = useParams();
@@ -256,46 +245,60 @@ export default function AnalyticsPage() {
         </div>
 
         {/* Graphiques */}
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Clics dans le temps */}
+        <div className="space-y-8">
+          {/* Première ligne - Graphique principal */}
           {clicksOverTime.length > 0 && (
             <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
               <h3 className="text-xl font-[200] text-white mb-4">Clicks Over Time</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={clicksOverTime}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="clics" stroke="#B696E3" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
+              <div className="h-80">
+                <LineChart
+                  dataset={clicksOverTime}
+                  xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
+                  series={[{ dataKey: 'clics', color: '#B696E3', label: 'Clicks', curve: 'linear' }]}
+                  width={undefined}
+                  height={300}
+                  margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
+                  sx={{
+                    '& .MuiChartsAxis-line': { stroke: '#374151' },
+                    '& .MuiChartsAxis-tick': { stroke: '#374151' },
+                    '& .MuiChartsAxis-tickLabel': { fill: '#9CA3AF', fontSize: '12px' },
+                    '& .MuiChartsGrid-line': { stroke: '#374151', strokeDasharray: '3 3' },
+                    '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
+                  }}
+                />
+              </div>
             </div>
           )}
+
+          {/* Deuxième ligne - Graphiques en grille */}
+          <div className="grid lg:grid-cols-2 gap-6">
 
           {/* Appareils */}
           {deviceStats.length > 0 && (
             <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
               <h3 className="text-xl font-[200] text-white mb-4">Device Breakdown</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={deviceStats.map(item => ({ name: item.name, value: item.value }))}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {deviceStats.map((_entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="h-80">
+                <PieChart
+                  series={[
+                    {
+                      data: deviceStats.map((item, index) => ({
+                        id: index,
+                        value: item.value,
+                        label: item.name,
+                        color: CHART_COLORS[index % CHART_COLORS.length]
+                      })),
+                      highlightScope: { fade: 'global', highlight: 'item' },
+                    },
+                  ]}
+                  width={undefined}
+                  height={300}
+                  margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                  sx={{
+                    '& .MuiChartsLegend-series text': { fill: '#F9FAFB !important', fontSize: '12px' },
+                    '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
+                  }}
+                />
+              </div>
             </div>
           )}
 
@@ -303,15 +306,23 @@ export default function AnalyticsPage() {
           {browserStats.length > 0 && (
             <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
               <h3 className="text-xl font-[200] text-white mb-4">Browsers</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={browserStats}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#B696E3" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="h-80">
+                <LineChart
+                  dataset={browserStats}
+                  xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
+                  series={[{ dataKey: 'value', color: '#B696E3', label: 'Usage', curve: 'catmullRom' }]}
+                  width={undefined}
+                  height={300}
+                  margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
+                  sx={{
+                    '& .MuiChartsAxis-line': { stroke: '#374151' },
+                    '& .MuiChartsAxis-tick': { stroke: '#374151' },
+                    '& .MuiChartsAxis-tickLabel': { fill: '#9CA3AF', fontSize: '12px' },
+                    '& .MuiChartsGrid-line': { stroke: '#374151', strokeDasharray: '3 3' },
+                    '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
+                  }}
+                />
+              </div>
             </div>
           )}
 
@@ -319,15 +330,23 @@ export default function AnalyticsPage() {
           {refererStats.length > 0 && (
             <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
               <h3 className="text-xl font-[200] text-white mb-4">Traffic Sources</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={refererStats}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#B696E3" />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="h-80">
+                <LineChart
+                  dataset={refererStats}
+                  xAxis={[{ scaleType: 'band', dataKey: 'name' }]}
+                  series={[{ dataKey: 'value', color: '#B696E3', label: 'Clicks', curve: 'catmullRom' }]}
+                  width={undefined}
+                  height={300}
+                  margin={{ left: 60, right: 20, top: 20, bottom: 60 }}
+                  sx={{
+                    '& .MuiChartsAxis-line': { stroke: '#374151' },
+                    '& .MuiChartsAxis-tick': { stroke: '#374151' },
+                    '& .MuiChartsAxis-tickLabel': { fill: '#9CA3AF', fontSize: '12px' },
+                    '& .MuiChartsGrid-line': { stroke: '#374151', strokeDasharray: '3 3' },
+                    '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
+                  }}
+                />
+              </div>
             </div>
           )}
 
@@ -335,25 +354,28 @@ export default function AnalyticsPage() {
           {countryStats.length > 0 && (
             <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm p-6">
               <h3 className="text-xl font-[200] text-white mb-4">Country Breakdown</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={countryStats.map(item => ({ name: item.name, value: item.value }))}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {countryStats.map((_entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="h-80">
+                <PieChart
+                  series={[
+                    {
+                      data: countryStats.slice(0, 8).map((item, index) => ({
+                        id: index,
+                        value: item.value,
+                        label: item.name,
+                        color: CHART_COLORS[index % CHART_COLORS.length]
+                      })),
+                      highlightScope: { fade: 'global', highlight: 'item' },
+                    },
+                  ]}
+                  width={undefined}
+                  height={300}
+                  margin={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                  sx={{
+                    '& .MuiChartsLegend-series text': { fill: '#F9FAFB !important', fontSize: '12px' },
+                    '& .MuiChartsTooltip-paper': { backgroundColor: '#1F2937', color: '#F9FAFB' },
+                  }}
+                />
+              </div>
             </div>
           )}
         </div>
