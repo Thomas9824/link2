@@ -3,11 +3,11 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function CreateLinkPage() {
+export default function AppHomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/app/creation-link');
+    router.replace('/app/dashboard');
   }, [router]);
 
   return (
@@ -15,7 +15,7 @@ export default function CreateLinkPage() {
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-400 mx-auto mb-4"></div>
-          <p className="text-gray-400 font-[200]">Redirecting...</p>
+          <p className="text-gray-400 font-[200]">Loading...</p>
         </div>
       </div>
     </div>
