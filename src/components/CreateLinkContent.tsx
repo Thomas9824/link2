@@ -13,7 +13,7 @@ interface LinkResult {
 }
 
 const GlassInputWrapper = ({ children }: { children: React.ReactNode }) => (
-  <div className="rounded-2xl border border-gray-700 bg-white/5 backdrop-blur-sm transition-colors focus-within:border-violet-400/70 focus-within:bg-violet-500/10">
+  <div className="rounded-2xl border border-gray-200 bg-gray-100 transition-colors focus-within:border-violet-400">
     {children}
   </div>
 );
@@ -84,10 +84,10 @@ export default function CreateLinkContent() {
     <div className="h-full flex items-center justify-center p-8">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-[200] text-white mb-4 leading-tight">
+          <h1 className="text-5xl md:text-6xl font-[200] text-gray-800 mb-4 leading-tight">
             Create a <span style={{ fontFamily: 'OffBit, monospace' }}>short link</span>
           </h1>
-          <p className="text-xl text-gray-400 font-[200] leading-tight">
+          <p className="text-xl text-gray-600 font-[200] leading-tight">
             Transform your long URLs into short, shareable links
           </p>
         </div>
@@ -95,7 +95,7 @@ export default function CreateLinkContent() {
         <div className="space-y-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="text-sm font-[200] text-gray-400 block mb-3">
+              <label className="text-sm font-[200] text-gray-600 block mb-3">
                 URL to shorten
               </label>
               <GlassInputWrapper>
@@ -104,14 +104,14 @@ export default function CreateLinkContent() {
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   placeholder="https://example.com/your-very-long-link"
-                  className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none text-white placeholder-gray-500 font-[200]"
+                  className="w-full bg-transparent text-sm p-4 rounded-2xl focus:outline-none text-gray-800 placeholder-gray-400 font-[200]"
                   disabled={loading}
                 />
               </GlassInputWrapper>
             </div>
 
             {error && (
-              <div className="bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg font-[200]">
+              <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg font-[200]">
                 {error}
               </div>
             )}
@@ -119,28 +119,28 @@ export default function CreateLinkContent() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-2xl bg-white text-black py-4 font-[200] hover:bg-gray-100 disabled:bg-gray-300 transition-colors"
+              className="w-full rounded-2xl bg-black text-white py-4 font-[200] hover:bg-gray-800 disabled:bg-gray-600 transition-colors"
             >
               {loading ? 'Creating link...' : 'Shorten link'}
             </button>
           </form>
 
           {result && (
-            <div className="mt-8 p-6 bg-green-900/20 border border-green-700 rounded-2xl">
-              <h3 className="text-lg font-[200] text-green-400 mb-4">
+            <div className="mt-8 p-6 bg-green-100 border border-green-300 rounded-2xl">
+              <h3 className="text-lg font-[200] text-green-700 mb-4">
                 Link created successfully!
               </h3>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-[200] text-gray-400 mb-2">
+                  <label className="block text-sm font-[200] text-gray-600 mb-2">
                     Original link:
                   </label>
-                  <p className="text-sm text-gray-300 break-all font-[200]">{result.originalUrl}</p>
+                  <p className="text-sm text-gray-700 break-all font-[200]">{result.originalUrl}</p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-[200] text-gray-400 mb-2">
+                  <label className="block text-sm font-[200] text-gray-600 mb-2">
                     Short link:
                   </label>
                   <div className="flex items-center gap-3">
@@ -149,19 +149,19 @@ export default function CreateLinkContent() {
                         type="text"
                         value={result.shortUrl}
                         readOnly
-                        className="flex-1 bg-transparent text-sm p-3 rounded-2xl focus:outline-none text-white font-[200]"
+                        className="flex-1 bg-transparent text-sm p-3 rounded-2xl focus:outline-none text-gray-800 font-[200]"
                       />
                     </GlassInputWrapper>
                     <button
                       onClick={copyToClipboard}
-                      className="px-6 py-3 bg-white hover:bg-gray-100 text-black text-sm font-[200] rounded-2xl transition-colors whitespace-nowrap"
+                      className="px-6 py-3 bg-black hover:bg-gray-800 text-white text-sm font-[200] rounded-2xl transition-colors whitespace-nowrap"
                     >
                       {copied ? 'Copied!' : 'Copy'}
                     </button>
                   </div>
                 </div>
 
-                <div className="text-xs text-gray-500 font-[200]">
+                <div className="text-xs text-gray-600 font-[200]">
                   Created on {new Date(result.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -178,7 +178,7 @@ export default function CreateLinkContent() {
         <div className="mt-12 text-center">
           <Link
             href="/app/dashboard"
-            className="text-white text-2xl font-[200] transition-colors inline-block relative group"
+            className="text-gray-800 text-2xl font-[200] transition-colors inline-block relative group"
             style={{ paddingBottom: '0.01rem' }}
           >
             <span className="inline-flex items-center">
@@ -186,7 +186,7 @@ export default function CreateLinkContent() {
                 <path d="M7 17L17 7M17 7H7M17 7V17"/>
               </svg>
             </span>
-            <span className="absolute left-0 bottom-0 w-0 h-px bg-white transition-all duration-300 ease-out group-hover:w-full"></span>
+            <span className="absolute left-0 bottom-0 w-0 h-px bg-gray-800 transition-all duration-300 ease-out group-hover:w-full"></span>
           </Link>
         </div>
       </div>
