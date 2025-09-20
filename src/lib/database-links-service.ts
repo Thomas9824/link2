@@ -198,6 +198,97 @@ export class DatabaseLinksService {
     return !!link
   }
 
+  static async getUserAnalyticsByPeriod(userId: string, period: 'week' | 'month' | 'year') {
+    const now = new Date();
+    let startDate: Date;
+
+    switch (period) {
+      case 'week':
+        startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        break;
+      case 'month':
+        startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        break;
+      case 'year':
+        startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+        break;
+    }
+
+    // Récupérer les clics pour la période
+    const clicks = await prisma.click.findMany({
+      where: {
+        link: {
+          userId
+        },
+        clickedAt: {
+          gte: startDate,
+        },
+      },
+      select: {
+        clickedAt: true,
+      },
+      orderBy: {
+        clickedAt: 'asc'
+      }
+    });
+
+    // Grouper par jour/mois selon la période
+    const dailyClicks: { [key: string]: number } = {};
+
+    clicks.forEach((click) => {
+      let dateKey: string;
+
+      if (period === 'year') {
+        // Grouper par mois pour l'année
+        dateKey = click.clickedAt.toLocaleDateString('fr-FR', {
+          month: 'short',
+          year: '2-digit'
+        });
+      } else {
+        // Grouper par jour pour semaine/mois
+        dateKey = click.clickedAt.toISOString().split('T')[0];
+      }
+
+      dailyClicks[dateKey] = (dailyClicks[dateKey] || 0) + 1;
+    });
+
+    // Générer la série complète de dates
+    const result = [];
+    const days = period === 'week' ? 7 : period === 'month' ? 30 : 12;
+
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date(startDate.getTime() + i * 24 * 60 * 60 * 1000);
+      let dateKey: string;
+      let displayDate: string;
+
+      if (period === 'year') {
+        const monthDate = new Date(now);
+        monthDate.setMonth(monthDate.getMonth() - i);
+        dateKey = monthDate.toLocaleDateString('fr-FR', {
+          month: 'short',
+          year: '2-digit'
+        });
+        displayDate = dateKey;
+      } else if (period === 'week') {
+        dateKey = date.toISOString().split('T')[0];
+        displayDate = date.toLocaleDateString('fr-FR', { weekday: 'short' });
+      } else {
+        dateKey = date.toISOString().split('T')[0];
+        displayDate = date.toLocaleDateString('fr-FR', {
+          day: 'numeric',
+          month: 'short'
+        });
+      }
+
+      result.push({
+        date: displayDate,
+        clicks: dailyClicks[dateKey] || 0
+      });
+    }
+
+    return result;
+  }
+
   static async getUserAnalytics(userId: string) {
     // Compter les liens de l'utilisateur
     const totalLinks = await prisma.link.count({

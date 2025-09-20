@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ChevronDown, TrendingUp } from 'lucide-react';
 import RotatingEarth from './RotatingEarth';
+import AnalyticsChart from './AnalyticsChart';
 
 interface LinkData {
   id: string;
@@ -59,6 +60,8 @@ export default function ModernDashboardContent() {
       }
 
       if (analyticsResponse.ok) {
+        console.log('[ModernDashboard] Analytics data received:', analyticsData.data);
+        console.log('[ModernDashboard] Top countries:', analyticsData.data?.topCountries);
         setAnalytics(analyticsData.data);
       }
 
@@ -115,82 +118,77 @@ export default function ModernDashboardContent() {
         {/* Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 h-auto">
 
-          {/* Total Clicks - Purple gradient card */}
-          <div className="relative bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-6">
+          {/* Total Clicks - Purple card */}
+          <div className="relative bg-gradient-to-br rounded-2xl p-4" style={{ backgroundColor: '#B696E3' }}>
             <div className="absolute top-4 right-4">
-              <span className="bg-black/20 text-white text-xs px-2 py-1 rounded-full">
+              <span className="bg-black text-white text-sm px-2 py-1 rounded-full">
                 +10%
               </span>
             </div>
-            <div className="space-y-2">
-              <h3 className="text-white/80 text-sm font-medium">Total Clicks</h3>
-              <p className="text-4xl font-bold text-white">
-                {analytics?.totalClicks || 11203}
+            <div className="space-y-1">
+              <h3 className="text-black text-3xl font-[200]">Total Clicks</h3>
+              <p className="text-4xl font-[400] text-black">
+                {analytics?.totalClicks}
               </p>
+              <p className="text-sm text-gray-600 font-[200]">Current situation</p>
             </div>
           </div>
 
           {/* Active Country */}
-          <div className="bg-gray-800 rounded-2xl p-6">
-            <div className="space-y-2">
-              <h3 className="text-gray-400 text-sm font-medium">Active Country</h3>
+          <div className="rounded-2xl p-4" style={{ backgroundColor: '#646464' }}>
+            <div className="space-y-1">
+              <h3 className="text-white text-3xl font-[200]">Active Country</h3>
               <div className="flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-400" />
-                <p className="text-3xl font-bold text-white">
-                  {analytics?.topCountries?.length || 24}
+                <TrendingUp className="w-8 h-8 text-white" />
+                <p className="text-4xl font-[400] text-white">
+                  {analytics?.topCountries?.length}
                 </p>
               </div>
+              <p className="text-sm text-gray-400 font-[200]">Current situation</p>
             </div>
           </div>
 
           {/* Traffic Distribution - Globe */}
-          <div className="bg-gray-800 rounded-2xl p-6 md:col-span-1 lg:row-span-2">
-            <div className="space-y-4">
-              <h3 className="text-white text-lg font-medium">Traffic Distribution</h3>
-              <div className="h-80">
-                <RotatingEarth
-                  width={300}
-                  height={300}
-                  className="w-full h-full"
-                  countryData={analytics?.topCountries || []}
-                />
-              </div>
+          <div className="rounded-2xl overflow-hidden md:col-span-1 lg:row-span-2 flex flex-col" style={{ backgroundColor: '#646464' }}>
+            <div className="p-4 pb-2 flex-shrink-0">
+              <h3 className="text-white text-3xl font-[200]">Traffic Distribution</h3>
+            </div>
+            <div className="flex-1 min-h-0">
+              <RotatingEarth
+                width={400}
+                height={400}
+                className="w-full h-full"
+                countryData={analytics?.topCountries || []}
+              />
             </div>
           </div>
 
           {/* Analytics Chart */}
           <div className="bg-gray-800 rounded-2xl p-6 md:col-span-2 lg:row-span-2">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-white text-lg font-medium">Analytics</h3>
-              <div className="flex items-center gap-2 bg-black rounded-full px-3 py-1">
-                <span className="text-white text-sm">last 7 days</span>
-                <ChevronDown className="w-4 h-4 text-white" />
-              </div>
-            </div>
-            <div className="h-48 bg-gray-900/50 rounded-xl flex items-center justify-center">
-              <span className="text-gray-500">Chart Placeholder</span>
-            </div>
+            <AnalyticsChart data={analytics?.recentActivity} />
           </div>
 
           {/* Details by country */}
-          <div className="bg-gradient-to-br from-purple-500/20 to-purple-700/20 rounded-2xl p-6">
-            <h3 className="text-white text-lg font-medium mb-4">Details by country</h3>
+          <div className="rounded-2xl p-4" style={{ backgroundColor: '#B696E3' }}>
+            <h3 className="text-black text-3xl font-[200] mb-1">Details by country</h3>
+            <hr className="border-black" />
+
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Country</span>
-                <span className="text-gray-400">Clicks</span>
-                <span className="text-gray-400">Percentage</span>
+                <span className="text-black text-xl font-[200]">Country</span>
+                <span className="text-black text-xl font-[200]">Clicks</span>
+                <span className="text-black text-xl font-[200]">Percentage</span>
               </div>
               {analytics?.topCountries?.slice(0, 3).map((country, index) => (
                 <div key={country.country} className="flex justify-between text-sm">
-                  <span className="text-white">{country.country}</span>
-                  <span className="text-white">{country.clicks}</span>
-                  <span className="text-gray-300">
+                  <span className="text-white bg-black px-2 py-1 rounded-full">{country.country}</span>
+                  <span className="text-white bg-black px-2 py-1 rounded-full">{country.clicks}</span>
+                  <span className="text-white bg-black px-2 py-1 rounded-full">
                     {((country.clicks / (analytics?.totalClicks || 1)) * 100).toFixed(1)}%
-                  </span>
+                    </span>
                 </div>
               )) || (
-                <div className="text-gray-500 text-sm">No data available</div>
+                <div className="text-black text-sm">No data available</div>
               )}
             </div>
           </div>
@@ -201,7 +199,7 @@ export default function ModernDashboardContent() {
         <div className="mt-6">
           <div className="bg-gray-800 rounded-2xl p-6">
             <div className="flex items-center gap-3 mb-6">
-              <h3 className="text-white text-lg font-medium">My Links</h3>
+              <h3 className="text-white text-lg font-[200]">My Links</h3>
               <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full">
                 {links.length}
               </span>
@@ -214,7 +212,7 @@ export default function ModernDashboardContent() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-medium text-white mb-2">
+                <h3 className="text-xl font-[200] text-white mb-2">
                   No links created
                 </h3>
                 <p className="text-gray-400 mb-6">

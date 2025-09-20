@@ -234,6 +234,7 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
       'United Kingdom': [-3.4360, 55.3781],
       'Spain': [-3.7492, 40.4637],
       'Italy': [12.5674, 41.8719],
+      'Ireland': [-8.2439, 53.4129],
       'United States': [-95.7129, 37.0902],
       'Canada': [-106.3468, 56.1304],
       'Brazil': [-51.9253, -14.2350],
@@ -243,29 +244,66 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
       'Australia': [133.7751, -25.2744]
     }
 
-    // Préparer les points de pays avec données
-    const countryPoints = countryData.map(data => {
-      const coords = countryCoordinates[data.country] || countryCoordinates[data.country.toLowerCase()] || null
-      if (!coords) {
-        console.warn(`[RotatingEarth] Coordonnées non trouvées pour le pays: ${data.country}`)
-        return null
-      }
-      return {
-        ...data,
-        coordinates: coords,
-        // Calculer la taille du point basée sur les clics (min: 3, max: 12)
-        pointSize: Math.max(3, Math.min(12, Math.log(data.clicks + 1) * 2))
-      }
-    }).filter(Boolean) as Array<{
+    // Utiliser UNIQUEMENT les vraies données de la base de données
+    console.log('[RotatingEarth] Processing ONLY real data from database:', countryData)
+
+    const countryPoints: Array<{
       country: string
       clicks: number
       links: number
       coordinates: [number, number]
       pointSize: number
-    }>
+    }> = []
 
-    console.log('[RotatingEarth] Raw country data received:', countryData)
-    console.log('[RotatingEarth] Country points prepared:', countryPoints)
+    // Traiter chaque pays de la base de données
+    if (countryData && countryData.length > 0) {
+      console.log('[RotatingEarth] Found real database data, processing:', countryData)
+
+      countryData.forEach((dbCountry, index) => {
+        console.log(`[RotatingEarth] Processing DB country ${index}:`, dbCountry)
+
+        // Essayer de trouver les coordonnées pour ce pays
+        let foundCoords = null
+        const countryName = dbCountry.country || 'Unknown'
+
+        // Recherche dans notre mapping avec toutes les variations possibles
+        foundCoords = countryCoordinates[countryName] ||
+                     countryCoordinates[countryName.toUpperCase()] ||
+                     countryCoordinates[countryName.toLowerCase()] ||
+                     countryCoordinates[countryName.trim()]
+
+        if (foundCoords) {
+          const realPoint = {
+            country: countryName,
+            clicks: Number(dbCountry.clicks) || 0,
+            links: Number(dbCountry.links) || 0,
+            coordinates: foundCoords as [number, number],
+            pointSize: Math.max(5, Math.min(15, Math.log((Number(dbCountry.clicks) || 0) + 1) * 3))
+          }
+          countryPoints.push(realPoint)
+          console.log(`[RotatingEarth] ✅ Added real point for ${countryName}:`, realPoint)
+        } else {
+          console.warn(`[RotatingEarth] ❌ No coordinates found for "${countryName}"`)
+          console.warn(`[RotatingEarth] Available keys:`, Object.keys(countryCoordinates).filter(k =>
+            k.toLowerCase().includes(countryName.toLowerCase()) ||
+            countryName.toLowerCase().includes(k.toLowerCase())
+          ))
+        }
+      })
+    } else {
+      console.log('[RotatingEarth] No real data from database found')
+    }
+
+    console.log('[RotatingEarth] Final points to display (REAL DATA ONLY):')
+    countryPoints.forEach((point, i) => {
+      console.log(`  ${i}: ${point.country} - ${point.clicks} clicks at [${point.coordinates[0]}, ${point.coordinates[1]}]`)
+    })
+
+    if (countryPoints.length === 0) {
+      console.warn('[RotatingEarth] ⚠️ No country points to display! Check if database has country data.')
+    }
+
+    console.log('[RotatingEarth] Final processed country points:', countryPoints)
 
     const pointInPolygon = (point: [number, number], polygon: number[][]): boolean => {
       const [x, y] = point
@@ -411,9 +449,9 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
         })
 
         // Draw country activity points
-        console.log('[RotatingEarth] About to draw', countryPoints.length, 'country points')
+        console.log('[RotatingEarth] About to draw', countryPoints.length, 'country points:', countryPoints.map(p => p.country))
         countryPoints.forEach((countryPoint, index) => {
-          console.log(`[RotatingEarth] Processing point ${index}:`, countryPoint)
+          console.log(`[RotatingEarth] Processing point ${index} (${countryPoint.country}):`, countryPoint)
           const projected = projection(countryPoint.coordinates)
           console.log(`[RotatingEarth] Projected coordinates:`, projected)
 
@@ -430,29 +468,32 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
             if (isVisible && x >= 0 && x <= containerWidth && y >= 0 && y <= containerHeight) {
               console.log(`[RotatingEarth] Drawing point ${index} at (${x}, ${y})`)
 
-              const pointRadius = countryPoint.pointSize * scaleFactor
+              // Forcer un rayon minimum plus visible
+              const pointRadius = Math.max(5, countryPoint.pointSize * scaleFactor)
 
               // Effet de pulsation basé sur l'activité
               const time = Date.now() / 1000
               const pulse = Math.sin(time * 2 + countryPoint.clicks * 0.1) * 0.3 + 1
 
-              // Point principal (glow effect)
+              console.log(`[RotatingEarth] Drawing point with radius: ${pointRadius}, pulse: ${pulse}`)
+
+              // Point principal (glow effect) - Violet
               context.beginPath()
-              context.arc(x, y, pointRadius * pulse * 1.5, 0, 2 * Math.PI)
-              context.fillStyle = "#ff6b35"
+              context.arc(x, y, pointRadius * pulse * 2, 0, 2 * Math.PI)
+              context.fillStyle = "#a855f7" // Violet principal
               context.globalAlpha = 0.3
               context.fill()
 
-              // Point central
+              // Point central - Violet plus foncé
               context.beginPath()
               context.arc(x, y, pointRadius * pulse, 0, 2 * Math.PI)
-              context.fillStyle = "#ff4500"
+              context.fillStyle = "#7c3aed" // Violet foncé
               context.globalAlpha = 0.8
               context.fill()
 
-              // Point intérieur
+              // Point intérieur - Blanc pour contraste
               context.beginPath()
-              context.arc(x, y, pointRadius * pulse * 0.5, 0, 2 * Math.PI)
+              context.arc(x, y, pointRadius * pulse * 0.3, 0, 2 * Math.PI)
               context.fillStyle = "#ffffff"
               context.globalAlpha = 1
               context.fill()
@@ -548,7 +589,7 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
     // Set up rotation and interaction
     const rotation: [number, number] = [0, 0]
     let autoRotate = true
-    const rotationSpeed = 0.5
+    const rotationSpeed = 0.3
 
     const rotate = () => {
       if (autoRotate) {
@@ -630,8 +671,8 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
     <div ref={containerRef} className={`relative w-full h-full ${className}`}>
       <canvas
         ref={canvasRef}
-        className="w-full h-full rounded-2xl bg-black"
-        style={{ display: 'block' }}
+        className="w-full h-full rounded-2xl"
+        style={{ display: 'block', backgroundColor: '#646464' }}
       />
       <div className="absolute bottom-4 left-4 text-xs text-gray-400 px-2 py-1 rounded-md bg-black/50">
         Drag to rotate • Scroll to zoom
