@@ -9,6 +9,31 @@ interface CountryData {
   links: number
 }
 
+interface PolygonGeometry {
+  type: 'Polygon'
+  coordinates: number[][][]
+}
+
+interface MultiPolygonGeometry {
+  type: 'MultiPolygon'
+  coordinates: number[][][][]
+}
+
+type GeoJSONGeometry = PolygonGeometry | MultiPolygonGeometry
+
+interface GeoJSONFeature {
+  type: 'Feature'
+  geometry: GeoJSONGeometry
+  properties?: {
+    [key: string]: string | number
+  }
+}
+
+interface GeoJSONCollection {
+  type: 'FeatureCollection'
+  features: GeoJSONFeature[]
+}
+
 interface RotatingEarthProps {
   width?: number
   height?: number
@@ -16,10 +41,9 @@ interface RotatingEarthProps {
   countryData?: CountryData[]
 }
 
-export default function RotatingEarth({ width = 800, height = 600, className = "", countryData = [] }: RotatingEarthProps) {
+export default function RotatingEarth({ className = "", countryData = [] }: RotatingEarthProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
@@ -321,11 +345,11 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
       return inside
     }
 
-    const pointInFeature = (point: [number, number], feature: any): boolean => {
+    const pointInFeature = (point: [number, number], feature: GeoJSONFeature): boolean => {
       const geometry = feature.geometry
 
       if (geometry.type === "Polygon") {
-        const coordinates = geometry.coordinates
+        const coordinates = geometry.coordinates as number[][][]
         // Check if point is in outer ring
         if (!pointInPolygon(point, coordinates[0])) {
           return false
@@ -338,8 +362,9 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
         }
         return true
       } else if (geometry.type === "MultiPolygon") {
+        const coordinates = geometry.coordinates as number[][][][]
         // Check each polygon in the MultiPolygon
-        for (const polygon of geometry.coordinates) {
+        for (const polygon of coordinates) {
           // Check if point is in outer ring
           if (pointInPolygon(point, polygon[0])) {
             // Check if point is in any hole
@@ -361,9 +386,9 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
       return false
     }
 
-    const generateDotsInPolygon = (feature: any, dotSpacing = 16) => {
+    const generateDotsInPolygon = (feature: GeoJSONFeature, dotSpacing = 16) => {
       const dots: [number, number][] = []
-      const bounds = d3.geoBounds(feature)
+      const bounds = d3.geoBounds(feature as d3.GeoPermissibleObjects)
       const [[minLng, minLat], [maxLng, maxLat]] = bounds
 
       const stepSize = dotSpacing * 0.08
@@ -393,7 +418,7 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
     }
 
     const allDots: DotData[] = []
-    let landFeatures: any
+    let landFeatures: GeoJSONCollection | null = null
 
     const render = () => {
       // Clear canvas
@@ -424,8 +449,8 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
 
         // Draw land outlines
         context.beginPath()
-        landFeatures.features.forEach((feature: any) => {
-          path(feature)
+        landFeatures?.features.forEach((feature) => {
+          path(feature as d3.GeoPermissibleObjects)
         })
         context.strokeStyle = "#ffffff"
         context.lineWidth = 1 * scaleFactor
@@ -532,7 +557,6 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
     const loadWorldData = async () => {
       try {
         console.log("[RotatingEarth] Starting to load world data...")
-        setIsLoading(true)
 
         const url = "/api/geojson"
         console.log("[RotatingEarth] Fetching from API route:", url)
@@ -548,32 +572,33 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
         console.log("[RotatingEarth] Parsing JSON response...")
         landFeatures = await response.json()
         console.log("[RotatingEarth] Land features loaded:", {
-          type: landFeatures.type,
-          featuresCount: landFeatures.features?.length,
-          firstFeature: landFeatures.features?.[0]
+          type: landFeatures?.type,
+          featuresCount: landFeatures?.features?.length,
+          firstFeature: landFeatures?.features?.[0]
         })
 
-        if (!landFeatures.features || landFeatures.features.length === 0) {
+        if (!landFeatures?.features || landFeatures.features.length === 0) {
           throw new Error("No land features found in the data")
         }
 
         // Generate dots for all land features
         console.log("[RotatingEarth] Starting dot generation...")
         let totalDots = 0
-        landFeatures.features.forEach((feature: any, index: number) => {
-          console.log(`[RotatingEarth] Processing feature ${index + 1}/${landFeatures.features.length}:`, feature.properties?.featurecla || "Unknown")
-          const dots = generateDotsInPolygon(feature, 16)
-          dots.forEach(([lng, lat]) => {
-            allDots.push({ lng, lat, visible: true })
-            totalDots++
+        if (landFeatures?.features) {
+          landFeatures.features.forEach((feature: GeoJSONFeature, index: number) => {
+            console.log(`[RotatingEarth] Processing feature ${index + 1}/${landFeatures?.features?.length || 0}:`, feature.properties?.featurecla || "Unknown")
+            const dots = generateDotsInPolygon(feature, 16)
+            dots.forEach(([lng, lat]) => {
+              allDots.push({ lng, lat, visible: true })
+              totalDots++
+            })
           })
-        })
+        }
 
-        console.log(`[RotatingEarth] ✅ Total dots generated: ${totalDots} across ${landFeatures.features.length} land features`)
+        console.log(`[RotatingEarth] ✅ Total dots generated: ${totalDots} across ${landFeatures?.features?.length || 0} land features`)
         console.log("[RotatingEarth] Starting initial render...")
 
         render()
-        setIsLoading(false)
         console.log("[RotatingEarth] ✅ Component loaded successfully!")
       } catch (err) {
         console.error("[RotatingEarth] ❌ Error loading world data:", err)
@@ -582,7 +607,6 @@ export default function RotatingEarth({ width = 800, height = 600, className = "
           stack: err instanceof Error ? err.stack : undefined
         })
         setError(`Failed to load land map data: ${err instanceof Error ? err.message : String(err)}`)
-        setIsLoading(false)
       }
     }
 

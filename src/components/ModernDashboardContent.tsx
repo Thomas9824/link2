@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { ChevronDown, TrendingUp } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
 import RotatingEarth from './RotatingEarth';
 import AnalyticsChart from './AnalyticsChart';
 
@@ -33,7 +33,7 @@ interface GlobalAnalytics {
 }
 
 export default function ModernDashboardContent() {
-  const { data: session } = useSession();
+  const { } = useSession();
   const [links, setLinks] = useState<LinkData[]>([]);
   const [analytics, setAnalytics] = useState<GlobalAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -179,7 +179,7 @@ export default function ModernDashboardContent() {
                 <span className="text-black text-xl font-[200]">Clicks</span>
                 <span className="text-black text-xl font-[200]">Percentage</span>
               </div>
-              {analytics?.topCountries?.slice(0, 3).map((country, index) => (
+              {analytics?.topCountries?.slice(0, 3).map((country) => (
                 <div key={country.country} className="flex justify-between text-sm">
                   <span className="text-white bg-black px-2 py-1 rounded-full">{country.country}</span>
                   <span className="text-white bg-black px-2 py-1 rounded-full">{country.clicks}</span>

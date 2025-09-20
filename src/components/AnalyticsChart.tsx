@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { ChevronDown } from 'lucide-react';
 
 interface AnalyticsData {
+  [key: string]: string | number;
   date: string;
   clicks: number;
 }
@@ -15,7 +16,7 @@ interface AnalyticsChartProps {
 
 type TimePeriod = 'week' | 'month' | 'year';
 
-export default function AnalyticsChart({ data = [] }: AnalyticsChartProps) {
+export default function AnalyticsChart({ }: AnalyticsChartProps) {
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('week');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [chartData, setChartData] = useState<AnalyticsData[]>([]);
@@ -27,7 +28,7 @@ export default function AnalyticsChart({ data = [] }: AnalyticsChartProps) {
   };
 
   // Fonction pour récupérer les données selon la période
-  const fetchAnalyticsData = async (period: TimePeriod) => {
+  const fetchAnalyticsData = useCallback(async (period: TimePeriod) => {
     try {
       const response = await fetch(`/api/analytics/period?period=${period}`);
       if (response.ok) {
@@ -38,7 +39,7 @@ export default function AnalyticsChart({ data = [] }: AnalyticsChartProps) {
       console.error('Error fetching analytics data:', error);
     }
     return generateMockData(period);
-  };
+  }, []);
 
   // Générer des données fictives si pas de données réelles
   const generateMockData = (period: TimePeriod): AnalyticsData[] => {
@@ -83,7 +84,7 @@ export default function AnalyticsChart({ data = [] }: AnalyticsChartProps) {
       setChartData(newData);
     };
     loadData();
-  }, [selectedPeriod]);
+  }, [selectedPeriod, fetchAnalyticsData]);
 
   const handlePeriodChange = (period: TimePeriod) => {
     setSelectedPeriod(period);

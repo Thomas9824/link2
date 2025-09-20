@@ -34,7 +34,7 @@ interface GlobalAnalytics {
 const CHART_COLORS = ['#B696E3', '#9333EA', '#7C3AED', '#6D28D9', '#5B21B6'];
 
 export default function DashboardContent() {
-  const { data: session } = useSession();
+  const { } = useSession();
   const [links, setLinks] = useState<LinkData[]>([]);
   const [analytics, setAnalytics] = useState<GlobalAnalytics | null>(null);
   const [loading, setLoading] = useState(true);
