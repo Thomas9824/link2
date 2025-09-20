@@ -148,7 +148,12 @@ export default function ModernDashboardContent() {
             <div className="space-y-4">
               <h3 className="text-white text-lg font-medium">Traffic Distribution</h3>
               <div className="h-80">
-                <RotatingEarth width={300} height={300} className="w-full h-full" />
+                <RotatingEarth
+                  width={300}
+                  height={300}
+                  className="w-full h-full"
+                  countryData={analytics?.topCountries || []}
+                />
               </div>
             </div>
           </div>
