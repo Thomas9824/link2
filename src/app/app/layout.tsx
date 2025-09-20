@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
-import { LayoutDashboard, Plus, Settings, User, BarChart } from "lucide-react";
+import { LayoutDashboard, Plus, Settings, User, BarChart, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 
 export default function AppLayout({
   children,
@@ -18,6 +17,7 @@ export default function AppLayout({
   const { data: session, status } = useSession();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [userDisplayName, setUserDisplayName] = useState<string>("");
 
   const sidebarLinks = [
     {
@@ -58,6 +58,27 @@ export default function AppLayout({
       return;
     }
   }, [session, status, router]);
+
+  // Mettre à jour le nom affiché quand la session change
+  useEffect(() => {
+    if (session?.user) {
+      const displayName = session.user.name || session.user.email || "User";
+      setUserDisplayName(displayName);
+    }
+  }, [session]);
+
+  const handleLogout = async () => {
+    try {
+      await signOut({
+        callbackUrl: '/',
+        redirect: true
+      });
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+      // Fallback: redirection manuelle
+      window.location.href = '/';
+    }
+  };
 
   if (status === 'loading') {
     return (
@@ -106,12 +127,10 @@ export default function AppLayout({
   };
 
   return (
-    <div className={cn(
-      "flex flex-col md:flex-row bg-gray-100 w-full flex-1 min-h-screen border border-neutral-200 overflow-hidden"
-    )}>
+    <div className="flex h-screen bg-gray-100 border border-neutral-200 overflow-hidden">
       <Sidebar open={open} setOpen={setOpen}>
-        <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+        <SidebarBody className="flex flex-col h-screen justify-between">
+          <div className="flex flex-col overflow-y-auto overflow-x-hidden">
             {open ? <Logo /> : <LogoIcon />}
             <div className="mt-8 flex flex-col gap-2">
               {sidebarLinks.map((link, idx) => (
@@ -119,10 +138,11 @@ export default function AppLayout({
               ))}
             </div>
           </div>
-          <div>
+
+          <div className="flex-shrink-0 pb-4">
             <SidebarLink
               link={{
-                label: session?.user?.name || "User",
+                label: userDisplayName,
                 href: "#",
                 icon: session?.user?.image ? (
                   <Image
@@ -137,11 +157,28 @@ export default function AppLayout({
                 ),
               }}
             />
+            <div className="mt-2 px-2">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 w-full text-left text-red-600 hover:text-red-700 py-2 text-sm transition-colors group/sidebar hover:bg-red-50 rounded-lg"
+              >
+                <LogOut className="h-4 w-4" />
+                <motion.span
+                  animate={{
+                    display: open ? "inline-block" : "none",
+                    opacity: open ? 1 : 0,
+                  }}
+                  className="text-sm transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+                >
+                  Log out
+                </motion.span>
+              </button>
+            </div>
           </div>
         </SidebarBody>
       </Sidebar>
 
-      <div className="flex-1 bg-white text-gray-800 overflow-auto p-2 md:p-10 rounded-tl-2xl border border-neutral-200">
+      <div className="flex-1 overflow-auto">
         {children}
       </div>
     </div>
